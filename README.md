@@ -2,6 +2,8 @@
 
 *A listening instrument.* A mechanical eye that hears the track before it opens.
 
+**▶ Live: https://vfbiby.github.io/auris/** (turn the sound on)
+
 ![Auris Nº 72 at the drop](docs/preview.png)
 
 72 plates wrapped around a mechanical eyeball, a 9-blade iris, a lens that slides out when the bass hits, and two rings orbiting it like its own little planet. All 3D, all code, rendered in the browser with Three.js.
