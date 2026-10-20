@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Auris Nº 72</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+
+    <svg class="reticle" aria-hidden="true"><use href="#reticle" /></svg>
+
+    <header class="masthead">
+      <p class="kicker">Auris <span>Nº 72</span> — a listening instrument</p>
+      <h1>The eye<br />that <em>listens.</em></h1>
+      <ul class="spec">
+        <li><b>72</b> plates</li>
+        <li><b>9</b> blade iris</li>
+        <li><b>1</b> sliding lens</li>
+        <li><b>2</b> orbits</li>
+      </ul>
+    </header>
+
+    <div class="transport">
+      <button id="play" class="play" aria-label="Play" disabled>
+        <svg viewBox="0 0 24 24" class="i-play"><path d="M8 5.5v13l10.5-6.5z" /></svg>
+        <svg viewBox="0 0 24 24" class="i-pause"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+      </button>
+      <div class="track">
+        <div class="track-title" id="trackTitle">—</div>
+        <div class="track-time"><span id="tNow">0:00</span> / <span id="tDur">0:00</span></div>
+      </div>
+      <label class="load">
+        <input type="file" id="file" accept="audio/*" />
+        <span>Load your track</span>
+      </label>
+    </div>
+
+    <aside class="panel" id="panel">
+      <div class="panel-head">
+        <span class="dot" id="liveDot"></span>
+        <span>Live telemetry</span>
+        <span class="grow"></span>
+        <span class="mono-dim" id="frameRate">—</span>
+      </div>
+
+      <section class="state">
+        <div class="label">Section</div>
+        <div class="section-name" id="sectionName">Standby</div>
+        <div class="readouts">
+          <div><div class="label">Tempo</div><div class="big" id="bpm">—</div><div class="unit">bpm</div></div>
+          <div><div class="label">Bar</div><div class="big" id="bar">—</div><div class="unit" id="beatPips"><i></i><i></i><i></i><i></i></div></div>
+          <div><div class="label">Drop</div><div class="big" id="dropAt">—</div><div class="unit">found</div></div>
+        </div>
+      </section>
+
+      <section class="timeline">
+        <div class="label">Arrangement, as heard <span class="mono-dim">· click to seek</span></div>
+        <div class="tl" id="timeline">
+          <canvas id="tlCanvas"></canvas>
+          <div class="tl-sections" id="tlSections"></div>
+          <div class="tl-head" id="tlHead"></div>
+        </div>
+        <ol class="tl-legend" id="tlLegend"></ol>
+      </section>
+
+      <section class="group">
+        <div class="group-title"><span>Signal</span><span class="rule"></span><span class="mono-dim">in</span></div>
+        <div id="signalSliders"></div>
+      </section>
+
+      <section class="group">
+        <div class="group-title"><span>Mechanism</span><span class="rule"></span><span class="mono-dim">out</span></div>
+        <div id="mechSliders"></div>
+      </section>
+
+      <p class="panel-foot">Grab any slider to take over that channel. Let go and the music takes it back.</p>
+    </aside>
+
+    <div class="veil" id="veil">
+      <div class="veil-inner">
+        <p class="kicker">Before it opens, it listens</p>
+        <ol class="log" id="log"></ol>
+        <button class="start" id="start" disabled>
+          <span class="start-ring"></span>
+          <span class="start-label">Turn the sound on</span>
+        </button>
+      </div>
+    </div>
+
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <symbol id="reticle" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M0 6V0h6M94 0h6v6M100 94v6h-6M6 100H0v-6" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
