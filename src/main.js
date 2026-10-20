@@ -347,11 +347,16 @@ let fpsAcc = 0;
 let fpsN = 0;
 let shownSection = '';
 const pips = [...document.querySelectorAll('#beatPips i')];
+// Offline mode: a script drives the clock frame by frame (video capture).
+let offline = false;
 function frame(now) {
+  if (offline) return;
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
-  const time = now / 1000;
-  const t = position();
+  render(position(), dt, now / 1000);
+  requestAnimationFrame(frame);
+}
+function render(t, dt, time) {
   const { p, section } = director.step(t, dt, time);
   eye.update(p, dt, time);
 
@@ -379,7 +384,6 @@ function frame(now) {
     fpsAcc = 0;
     fpsN = 0;
   }
-  requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
@@ -392,5 +396,47 @@ window.__auris = {
   },
   get t() {
     return position();
+  },
+  // Stop the live loop; afterwards each renderAt() call draws one frame.
+  offline() {
+    pause();
+    pausedAt = -1;
+    offline = true;
+    document.body.classList.add('playing'); // look live on camera
+    $('frameRate').textContent = '60 fps';
+  },
+  renderAt(t, dt, time) {
+    render(t, dt, time);
+  },
+  // 16-bit stereo WAV of [t0, t1) from the current track, base64-encoded.
+  wav(t0, t1) {
+    const b = track.buffer;
+    const a = Math.floor(t0 * b.sampleRate);
+    const n = Math.floor((t1 - t0) * b.sampleRate);
+    const chans = [b.getChannelData(0), b.getChannelData(Math.min(1, b.numberOfChannels - 1))];
+    const view = new DataView(new ArrayBuffer(44 + n * 4));
+    const str = (o, s) => [...s].forEach((c, i) => view.setUint8(o + i, c.charCodeAt(0)));
+    str(0, 'RIFF');
+    view.setUint32(4, 36 + n * 4, true);
+    str(8, 'WAVEfmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 2, true);
+    view.setUint32(24, b.sampleRate, true);
+    view.setUint32(28, b.sampleRate * 4, true);
+    view.setUint16(32, 4, true);
+    view.setUint16(34, 16, true);
+    str(36, 'data');
+    view.setUint32(40, n * 4, true);
+    for (let i = 0; i < n; i++) {
+      for (let c = 0; c < 2; c++) {
+        const v = Math.max(-1, Math.min(1, chans[c][a + i] || 0));
+        view.setInt16(44 + i * 4 + c * 2, v * 32767, true);
+      }
+    }
+    let bin = '';
+    const bytes = new Uint8Array(view.buffer);
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
   },
 };
